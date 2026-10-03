@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="es" class="dark">
 <head>
@@ -105,6 +104,11 @@
     border-color: #8b5cf6;
     transform: translateY(-2px);
   }
+
+  /* Mobile Drawer animation */
+  #sidebar {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 </style>
 </head>
 
@@ -120,13 +124,13 @@
       
       <!-- Brand Logo -->
       <div class="flex items-center gap-3">
-        <a href="#top" class="flex items-center gap-2.5 font-bold text-xl tracking-tight text-white group">
+        <a href="#top" class="flex items-center gap-2.5 font-bold text-lg sm:text-xl tracking-tight text-white group">
           <span class="w-3.5 h-3.5 rounded-full bg-brand-500 shadow-[0_0_12px_#8b5cf6] group-hover:scale-110 transition-transform"></span>
-          <span>LolPlusTV <span class="text-brand-400 font-medium text-sm ml-1 px-2 py-0.5 rounded-md bg-brand-500/10 border border-brand-500/20">Docs</span></span>
+          <span>LolPlusTV <span class="text-brand-400 font-medium text-xs sm:text-sm ml-1 px-2 py-0.5 rounded-md bg-brand-500/10 border border-brand-500/20">Docs</span></span>
         </a>
       </div>
 
-      <!-- Quick Search Bar -->
+      <!-- Quick Search Bar (Desktop) -->
       <div class="hidden md:flex flex-1 max-w-md relative">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
         <input type="text" id="docSearch" placeholder="Buscar en la documentación... (Ctrl+K)" 
@@ -134,15 +138,15 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class="flex items-center gap-3">
-        <span class="hidden sm:inline-flex px-2.5 py-1 text-xs font-semibold text-brand-400 bg-brand-500/10 border border-brand-500/30 rounded-lg">
+      <div class="flex items-center gap-2 sm:gap-3">
+        <span class="inline-flex px-2 py-0.5 sm:px-2.5 sm:py-1 text-[11px] sm:text-xs font-semibold text-brand-400 bg-brand-500/10 border border-brand-500/30 rounded-lg">
           API v1.0
         </span>
         <a href="#comunidad" class="hidden sm:inline-flex items-center gap-2 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-500 px-3.5 py-2 rounded-xl transition-all shadow-lg shadow-brand-600/20 active:scale-95">
           <i class="fa-brands fa-github text-sm"></i> Publicar Addon
         </a>
         <!-- Mobile Menu Toggle Button -->
-        <button id="mobileMenuBtn" class="md:hidden p-2 text-gray-400 hover:text-white rounded-lg hover:bg-dark-surface focus:outline-none">
+        <button id="mobileMenuBtn" aria-label="Abrir menú de navegación" class="md:hidden p-2 text-gray-300 hover:text-white rounded-xl bg-dark-surface border border-dark-border focus:outline-none active:scale-95 transition-all">
           <i class="fa-solid fa-bars text-lg"></i>
         </button>
       </div>
@@ -150,17 +154,28 @@
   </header>
 
   <div id="top" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col md:flex-row gap-8 py-6">
+    <div class="flex flex-col md:flex-row gap-8 py-4 sm:py-6">
 
       <!-- Sidebar Mobile Backdrop -->
-      <div id="sidebarBackdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden md:hidden"></div>
+      <div id="sidebarBackdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"></div>
 
       <!-- Left Sidebar Navigation -->
-      <aside id="sidebar" class="fixed md:sticky top-16 left-0 z-40 md:z-auto w-72 md:w-64 h-[calc(100vh-4rem)] bg-dark-bg md:bg-transparent border-r md:border-r-0 border-dark-border p-4 md:py-6 overflow-y-auto hidden md:block transition-all duration-300">
+      <aside id="sidebar" class="fixed md:sticky top-0 md:top-16 left-0 z-50 md:z-auto w-72 md:w-64 h-full md:h-[calc(100vh-4rem)] bg-dark-surface md:bg-transparent border-r md:border-r-0 border-dark-border p-5 md:py-6 overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-300 ease-out">
         
+        <!-- Mobile Header inside Sidebar -->
+        <div class="flex items-center justify-between md:hidden mb-4 pb-3 border-b border-dark-border">
+          <div class="text-sm font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-book-bookmark text-brand-400"></i> Menú Docs
+          </div>
+          <button id="closeSidebarBtn" class="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-dark-hover">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
         <!-- Mobile Search -->
-        <div class="md:hidden mb-4">
-          <input type="text" id="docSearchMobile" placeholder="Buscar en docs..." class="w-full bg-dark-surface border border-dark-border rounded-lg p-2 text-sm text-gray-200">
+        <div class="md:hidden mb-5 relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+          <input type="text" id="docSearchMobile" placeholder="Buscar en docs..." class="w-full bg-dark-bg border border-dark-border rounded-xl pl-8 pr-3 py-2 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-brand-500">
         </div>
 
         <nav class="space-y-6 text-sm">
@@ -170,11 +185,11 @@
               <i class="fa-solid fa-compass text-brand-400"></i> Introducción
             </div>
             <div class="space-y-1">
-              <a href="#introduccion" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">1. Visión General</a>
-              <a href="#tipos" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">2. Tipos de Addons</a>
-              <a href="#instalacion" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">3. Instalación</a>
-              <a href="#estructura" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">4. Estructura de Proyecto</a>
-              <a href="#manifest" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">5. Manifest Specification</a>
+              <a href="#introduccion" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">1. Visión General</a>
+              <a href="#tipos" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">2. Tipos de Addons</a>
+              <a href="#instalacion" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">3. Instalación</a>
+              <a href="#estructura" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">4. Estructura de Proyecto</a>
+              <a href="#manifest" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">5. Manifest Specification</a>
             </div>
           </div>
 
@@ -183,11 +198,11 @@
               <i class="fa-solid fa-play text-brand-400"></i> Addons de Fuente
             </div>
             <div class="space-y-1">
-              <a href="#fuentes" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">6. Fuentes & Flujo</a>
-              <a href="#getstreams" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">7. getStreams()</a>
-              <a href="#streamitem" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">8. StreamItem</a>
-              <a href="#extract" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">9. Resolver extract()</a>
-              <a href="#headers" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">10. HTTP Headers</a>
+              <a href="#fuentes" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">6. Fuentes & Flujo</a>
+              <a href="#getstreams" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">7. getStreams()</a>
+              <a href="#streamitem" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">8. StreamItem</a>
+              <a href="#extract" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">9. Resolver extract()</a>
+              <a href="#headers" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">10. HTTP Headers</a>
             </div>
           </div>
 
@@ -196,12 +211,12 @@
               <i class="fa-solid fa-grip text-brand-400"></i> Addons de Catálogo
             </div>
             <div class="space-y-1">
-              <a href="#catalogos" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">11. Catálogos & Flujo</a>
-              <a href="#contentitem" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">12. ContentItem</a>
-              <a href="#home" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">13. getHome()</a>
-              <a href="#search" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">14. search()</a>
-              <a href="#discover" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">15. discover()</a>
-              <a href="#metadata" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">16. getMeta()</a>
+              <a href="#catalogos" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">11. Catálogos & Flujo</a>
+              <a href="#contentitem" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">12. ContentItem</a>
+              <a href="#home" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">13. getHome()</a>
+              <a href="#search" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">14. search()</a>
+              <a href="#discover" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">15. discover()</a>
+              <a href="#metadata" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">16. getMeta()</a>
             </div>
           </div>
 
@@ -210,11 +225,11 @@
               <i class="fa-solid fa-tv text-brand-400"></i> TV Live
             </div>
             <div class="space-y-1">
-              <a href="#tv-live" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">17. TV Arquitectura</a>
-              <a href="#tv-index" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">18. index.json Schema</a>
-              <a href="#tv-channel" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">19. Objeto Canal TV</a>
-              <a href="#tv-m3u" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">20. Soporte M3U / M3U8</a>
-              <a href="#tv-categorias" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">21. Categorías TV</a>
+              <a href="#tv-live" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">17. TV Arquitectura</a>
+              <a href="#tv-index" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">18. index.json Schema</a>
+              <a href="#tv-channel" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">19. Objeto Canal TV</a>
+              <a href="#tv-m3u" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">20. Soporte M3U / M3U8</a>
+              <a href="#tv-categorias" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">21. Categorías TV</a>
             </div>
           </div>
 
@@ -223,42 +238,42 @@
               <i class="fa-solid fa-users text-brand-400"></i> Ecosistema & API
             </div>
             <div class="space-y-1">
-              <a href="#configuracion" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">22. Configuración</a>
-              <a href="#versionado" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">23. SemVer Versionado</a>
-              <a href="#comunidad" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">24. Publicación GitHub</a>
-              <a href="#topics" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">25. GitHub Topics</a>
-              <a href="#readme" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">26. README Estándar</a>
-              <a href="#errores" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">27. Diagnóstico de Errores</a>
-              <a href="#sdk" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">28. SDK API v1 Completa</a>
-              <a href="#checklist" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">29. Checklist Final</a>
+              <a href="#configuracion" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">22. Configuración</a>
+              <a href="#versionado" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">23. SemVer Versionado</a>
+              <a href="#comunidad" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">24. Publicación GitHub</a>
+              <a href="#topics" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">25. GitHub Topics</a>
+              <a href="#readme" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">26. README Estándar</a>
+              <a href="#errores" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">27. Diagnóstico de Errores</a>
+              <a href="#sdk" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">28. SDK API v1 Completa</a>
+              <a href="#checklist" class="nav-item block px-2.5 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">29. Checklist Final</a>
             </div>
           </div>
 
         </nav>
       </aside>
 
-      <main class="flex-1 min-w-0 max-w-4xl space-y-16">
+      <main class="flex-1 min-w-0 max-w-4xl space-y-12 sm:space-y-16">
 
         <!-- Hero Section -->
-        <div class="border-b border-dark-border pb-10 pt-4">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold mb-6">
+        <div class="border-b border-dark-border pb-8 sm:pb-10 pt-2 sm:pt-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold mb-4 sm:mb-6">
             <i class="fa-solid fa-code-branch"></i> LolPlusTV Core SDK v1.0
           </div>
-          <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
-            Sistema de Addons <br>
+          <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+            Sistema de Addons <br class="hidden sm:inline">
             <span class="bg-clip-text text-transparent bg-gradient-to-r from-brand-400 via-purple-300 to-indigo-400">LolPlusTV Architecture</span>
           </h1>
-          <p class="text-lg text-gray-400 leading-relaxed max-w-3xl">
+          <p class="text-sm sm:text-base text-gray-400 leading-relaxed max-w-3xl">
             Guía técnica oficial para la creación, prueba y distribución de módulos desacoplados. Diseñe integraciones sólidas para catálogos VOD, extracción de servidores multimediales e índices de TV en Vivo lineal.
           </p>
-          <div class="flex flex-wrap gap-3 mt-8">
-            <a href="#fuentes" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-sm transition-all shadow-lg shadow-brand-600/25">
+          <div class="flex flex-col sm:flex-row flex-wrap gap-2.5 sm:gap-3 mt-6 sm:mt-8">
+            <a href="#fuentes" class="inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs sm:text-sm transition-all shadow-lg shadow-brand-600/25 active:scale-95">
               <i class="fa-solid fa-bolt"></i> Crear una Fuente
             </a>
-            <a href="#catalogos" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-dark-card hover:bg-dark-hover border border-dark-border text-gray-200 font-semibold text-sm transition-all">
+            <a href="#catalogos" class="inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl bg-dark-card hover:bg-dark-hover border border-dark-border text-gray-200 font-semibold text-xs sm:text-sm transition-all active:scale-95">
               <i class="fa-solid fa-layer-group"></i> Crear un Catálogo
             </a>
-            <a href="#tv-live" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-dark-card hover:bg-dark-hover border border-dark-border text-gray-200 font-semibold text-sm transition-all">
+            <a href="#tv-live" class="inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl bg-dark-card hover:bg-dark-hover border border-dark-border text-gray-200 font-semibold text-xs sm:text-sm transition-all active:scale-95">
               <i class="fa-solid fa-tv"></i> Integrar TV Live
             </a>
           </div>
@@ -929,18 +944,18 @@ lol-addon-fuentes</code></pre>
         <section id="sdk" class="scroll-mt-24 space-y-6">
           <div class="flex items-center gap-3">
             <span class="text-brand-400 font-mono text-sm font-bold">28.</span>
-            <h2 class="text-2xl font-bold text-white tracking-tight">LolPlusTV Addon SDK API v1</h2>
+            <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">LolPlusTV Addon SDK API v1</h2>
           </div>
 
           <!-- Master Architecture Diagram -->
-          <div class="p-6 glass-card rounded-2xl border border-dark-border space-y-6">
-            <div class="flex items-center justify-between border-b border-dark-border pb-3">
-              <h3 class="text-sm font-bold text-white uppercase tracking-wider">Arquitectura Completa del Sistema LolPlusTV</h3>
-              <span class="text-xs font-mono text-brand-400">v1.0 Specifications</span>
+          <div class="p-4 sm:p-6 glass-card rounded-2xl border border-dark-border space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-dark-border pb-3 gap-1">
+              <h3 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">Arquitectura Completa del Sistema LolPlusTV</h3>
+              <span class="text-[11px] font-mono text-brand-400">v1.0 Specifications</span>
             </div>
 
             <!-- CSS Visual Diagram -->
-            <div class="space-y-6 text-xs text-center">
+            <div class="space-y-4 sm:space-y-6 text-xs text-center">
               
               <!-- Core Box -->
               <div class="p-3 bg-brand-600/20 border border-brand-500/40 rounded-xl font-bold text-white max-w-xs mx-auto shadow-lg shadow-brand-500/10">
@@ -948,40 +963,40 @@ lol-addon-fuentes</code></pre>
               </div>
 
               <!-- Split Branches -->
-              <div class="grid grid-cols-2 gap-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
                 <!-- Left: VOD -->
-                <div class="p-4 bg-dark-surface border border-dark-border rounded-xl space-y-3">
+                <div class="p-3.5 sm:p-4 bg-dark-surface border border-dark-border rounded-xl space-y-3">
                   <div class="font-bold text-purple-400 uppercase tracking-wider text-[11px]">Subsistema VOD</div>
-                  <div class="grid grid-cols-2 gap-2 text-[11px]">
-                    <div class="p-2 bg-dark-bg border border-dark-border rounded">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                    <div class="p-2.5 bg-dark-bg border border-dark-border rounded-lg">
                       <div class="text-white font-semibold">FUENTES</div>
                       <div class="text-[10px] text-gray-400 font-mono">getStreams()</div>
                     </div>
-                    <div class="p-2 bg-dark-bg border border-dark-border rounded">
+                    <div class="p-2.5 bg-dark-bg border border-dark-border rounded-lg">
                       <div class="text-white font-semibold">CATÁLOGOS</div>
                       <div class="text-[10px] text-gray-400 font-mono">getHome()</div>
                     </div>
                   </div>
-                  <div class="p-2 bg-brand-500/10 border border-brand-500/20 rounded text-brand-300 font-semibold">
+                  <div class="p-2 bg-brand-500/10 border border-brand-500/20 rounded-lg text-brand-300 font-semibold text-[11px]">
                     VOD Player & Stream Resolvers
                   </div>
                 </div>
 
                 <!-- Right: TV Live -->
-                <div class="p-4 bg-dark-surface border border-dark-border rounded-xl space-y-3">
+                <div class="p-3.5 sm:p-4 bg-dark-surface border border-dark-border rounded-xl space-y-3">
                   <div class="font-bold text-indigo-400 uppercase tracking-wider text-[11px]">Subsistema TV Live</div>
-                  <div class="grid grid-cols-2 gap-2 text-[11px]">
-                    <div class="p-2 bg-dark-bg border border-dark-border rounded">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                    <div class="p-2.5 bg-dark-bg border border-dark-border rounded-lg">
                       <div class="text-white font-semibold">M3U Parser</div>
                       <div class="text-[10px] text-gray-400 font-mono">.m3u / .m3u8</div>
                     </div>
-                    <div class="p-2 bg-dark-bg border border-dark-border rounded">
+                    <div class="p-2.5 bg-dark-bg border border-dark-border rounded-lg">
                       <div class="text-white font-semibold">JSON Index</div>
                       <div class="text-[10px] text-gray-400 font-mono">index.json</div>
                     </div>
                   </div>
-                  <div class="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded text-indigo-300 font-semibold">
+                  <div class="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-300 font-semibold text-[11px]">
                     Live TV Grid & Player
                   </div>
                 </div>
@@ -996,40 +1011,40 @@ lol-addon-fuentes</code></pre>
         <section id="checklist" class="scroll-mt-24 space-y-4">
           <div class="flex items-center gap-3">
             <span class="text-brand-400 font-mono text-sm font-bold">29.</span>
-            <h2 class="text-2xl font-bold text-white tracking-tight">Checklist de Publicación</h2>
+            <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Checklist de Publicación</h2>
           </div>
-          <p class="text-gray-300">Verifique los requisitos antes de hacer público su repositorio:</p>
+          <p class="text-sm text-gray-300">Verifique los requisitos antes de hacer público su repositorio:</p>
 
-          <div id="checklistContainer" class="p-6 glass-card rounded-2xl border border-dark-border space-y-3">
+          <div id="checklistContainer" class="p-4 sm:p-6 glass-card rounded-2xl border border-dark-border space-y-2.5">
             
-            <label class="flex items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
-              <input type="checkbox" class="w-4 h-4 rounded accent-brand-500 bg-dark-bg border-dark-border">
+            <label class="flex items-start sm:items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
+              <input type="checkbox" class="w-4 h-4 mt-0.5 sm:mt-0 rounded accent-brand-500 bg-dark-bg border-dark-border flex-shrink-0">
               <span class="text-xs text-gray-200">El repositorio de GitHub es de acceso PÚBLICO.</span>
             </label>
 
-            <label class="flex items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
-              <input type="checkbox" class="w-4 h-4 rounded accent-brand-500 bg-dark-bg border-dark-border">
+            <label class="flex items-start sm:items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
+              <input type="checkbox" class="w-4 h-4 mt-0.5 sm:mt-0 rounded accent-brand-500 bg-dark-bg border-dark-border flex-shrink-0">
               <span class="text-xs text-gray-200">El archivo <code>manifest.json</code> es válido según la especificación API v1.</span>
             </label>
 
-            <label class="flex items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
-              <input type="checkbox" class="w-4 h-4 rounded accent-brand-500 bg-dark-bg border-dark-border">
+            <label class="flex items-start sm:items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
+              <input type="checkbox" class="w-4 h-4 mt-0.5 sm:mt-0 rounded accent-brand-500 bg-dark-bg border-dark-border flex-shrink-0">
               <span class="text-xs text-gray-200">El parámetro <code>id</code> es único y la versión inicial está asignada.</span>
             </label>
 
-            <label class="flex items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
-              <input type="checkbox" class="w-4 h-4 rounded accent-brand-500 bg-dark-bg border-dark-border">
+            <label class="flex items-start sm:items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
+              <input type="checkbox" class="w-4 h-4 mt-0.5 sm:mt-0 rounded accent-brand-500 bg-dark-bg border-dark-border flex-shrink-0">
               <span class="text-xs text-gray-200">Se adjuntó un archivo <code>README.md</code> descriptivo para la comunidad.</span>
             </label>
 
-            <label class="flex items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
-              <input type="checkbox" class="w-4 h-4 rounded accent-brand-500 bg-dark-bg border-dark-border">
+            <label class="flex items-start sm:items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
+              <input type="checkbox" class="w-4 h-4 mt-0.5 sm:mt-0 rounded accent-brand-500 bg-dark-bg border-dark-border flex-shrink-0">
               <span class="text-xs text-gray-200">Se asignó el Topic correcto en GitHub (ej. <code>lol-addon-fuentes</code>).</span>
             </label>
 
           </div>
 
-          <div class="pt-6 flex justify-between items-center text-xs text-gray-500 border-t border-dark-border">
+          <div class="pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-gray-500 border-t border-dark-border text-center sm:text-left">
             <span>LolPlusTV Addon SDK v1 — Developer Documentation</span>
             <a href="#top" class="text-brand-400 hover:underline flex items-center gap-1">
               <i class="fa-solid fa-arrow-up"></i> Volver arriba
@@ -1093,31 +1108,61 @@ lol-addon-fuentes</code></pre>
       });
     });
 
-    // Mobile Menu Toggle
+    // Mobile Menu Drawer Control
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
     const sidebar = document.getElementById('sidebar');
     const sidebarBackdrop = document.getElementById('sidebarBackdrop');
 
-    function toggleMobileMenu() {
-      sidebar.classList.toggle('hidden');
-      sidebarBackdrop.classList.toggle('hidden');
+    function openMobileMenu() {
+      sidebar.classList.remove('-translate-x-full');
+      sidebarBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+      document.body.classList.add('overflow-hidden', 'md:overflow-auto');
     }
 
-    mobileMenuBtn?.addEventListener('click', toggleMobileMenu);
-    sidebarBackdrop?.addEventListener('click', toggleMobileMenu);
+    function closeMobileMenu() {
+      sidebar.classList.add('-translate-x-full');
+      sidebarBackdrop.classList.add('opacity-0', 'pointer-events-none');
+      document.body.classList.remove('overflow-hidden', 'md:overflow-auto');
+    }
 
-    // Live search filter
-    const docSearch = document.getElementById('docSearch');
-    docSearch?.addEventListener('input', (e) => {
-      const query = e.target.value.toLowerCase();
+    mobileMenuBtn?.addEventListener('click', openMobileMenu);
+    closeSidebarBtn?.addEventListener('click', closeMobileMenu);
+    sidebarBackdrop?.addEventListener('click', closeMobileMenu);
+
+    // Auto-close menu when clicking a navigation link on mobile
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+          closeMobileMenu();
+        }
+      });
+    });
+
+    // Live search filter (Synchronized desktop + mobile)
+    function applySearch(query) {
+      const cleanQuery = query.toLowerCase().trim();
       sections.forEach(section => {
         const text = section.innerText.toLowerCase();
-        if (text.includes(query)) {
+        if (!cleanQuery || text.includes(cleanQuery)) {
           section.style.display = 'block';
         } else {
           section.style.display = 'none';
         }
       });
+    }
+
+    const docSearch = document.getElementById('docSearch');
+    const docSearchMobile = document.getElementById('docSearchMobile');
+
+    docSearch?.addEventListener('input', (e) => {
+      if (docSearchMobile) docSearchMobile.value = e.target.value;
+      applySearch(e.target.value);
+    });
+
+    docSearchMobile?.addEventListener('input', (e) => {
+      if (docSearch) docSearch.value = e.target.value;
+      applySearch(e.target.value);
     });
   </script>
 </body>
