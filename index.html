@@ -1,1 +1,1124 @@
 
+<!doctype html>
+<html lang="es" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LolPlusTV — Documentación para Desarrolladores de Addons</title>
+<meta name="description" content="Documentación técnica y guías para desarrolladores de addons en LolPlusTV API v1.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Tailwind CSS v3 via CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          dark: {
+            bg: '#060608',
+            surface: '#0d0d12',
+            card: '#12121a',
+            border: '#232332',
+            hover: '#1a1a26'
+          },
+          brand: {
+            50: '#f5f3ff',
+            100: '#ede9fe',
+            400: '#a78bfa',
+            500: '#8b5cf6',
+            600: '#7c3aed',
+            700: '#6d28d9',
+            glow: 'rgba(139, 92, 246, 0.25)'
+          }
+        },
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace']
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  /* Custom scrollbar & smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #060608;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #232332;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3b3b54;
+  }
+
+  /* Custom Glow and Glass effects */
+  .glass-header {
+    background: rgba(6, 6, 8, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .glass-card {
+    background: rgba(18, 18, 26, 0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  .glass-card:hover {
+    border-color: rgba(139, 92, 246, 0.35);
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.12);
+  }
+  .bg-glow {
+    background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.15) 0%, rgba(120, 58, 237, 0.05) 35%, transparent 70%);
+  }
+  
+  /* Active navlink animation */
+  .nav-active {
+    color: #a78bfa !important;
+    background: rgba(139, 92, 246, 0.12);
+    border-left: 3px solid #8b5cf6;
+    font-weight: 600;
+  }
+
+  /* Node diagrams styling */
+  .flow-node {
+    background: #12121a;
+    border: 1px solid #232332;
+    transition: all 0.2s ease;
+  }
+  .flow-node:hover {
+    border-color: #8b5cf6;
+    transform: translateY(-2px);
+  }
+</style>
+</head>
+
+<body class="bg-dark-bg text-gray-200 font-sans antialiased min-h-screen selection:bg-brand-500 selection:text-white relative">
+
+  <!-- Background Ambient Glow -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] bg-glow pointer-events-none -z-10"></div>
+
+  <div id="progress-bar" class="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-brand-600 via-purple-400 to-indigo-500 z-50 transition-all duration-150 w-0"></div>
+
+  <header class="sticky top-0 z-40 glass-header border-b border-dark-border/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3">
+        <a href="#top" class="flex items-center gap-2.5 font-bold text-xl tracking-tight text-white group">
+          <span class="w-3.5 h-3.5 rounded-full bg-brand-500 shadow-[0_0_12px_#8b5cf6] group-hover:scale-110 transition-transform"></span>
+          <span>LolPlusTV <span class="text-brand-400 font-medium text-sm ml-1 px-2 py-0.5 rounded-md bg-brand-500/10 border border-brand-500/20">Docs</span></span>
+        </a>
+      </div>
+
+      <!-- Quick Search Bar -->
+      <div class="hidden md:flex flex-1 max-w-md relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+        <input type="text" id="docSearch" placeholder="Buscar en la documentación... (Ctrl+K)" 
+          class="w-full bg-dark-surface border border-dark-border rounded-xl pl-9 pr-4 py-1.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-3">
+        <span class="hidden sm:inline-flex px-2.5 py-1 text-xs font-semibold text-brand-400 bg-brand-500/10 border border-brand-500/30 rounded-lg">
+          API v1.0
+        </span>
+        <a href="#comunidad" class="hidden sm:inline-flex items-center gap-2 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-500 px-3.5 py-2 rounded-xl transition-all shadow-lg shadow-brand-600/20 active:scale-95">
+          <i class="fa-brands fa-github text-sm"></i> Publicar Addon
+        </a>
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobileMenuBtn" class="md:hidden p-2 text-gray-400 hover:text-white rounded-lg hover:bg-dark-surface focus:outline-none">
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div id="top" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row gap-8 py-6">
+
+      <!-- Sidebar Mobile Backdrop -->
+      <div id="sidebarBackdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+      <!-- Left Sidebar Navigation -->
+      <aside id="sidebar" class="fixed md:sticky top-16 left-0 z-40 md:z-auto w-72 md:w-64 h-[calc(100vh-4rem)] bg-dark-bg md:bg-transparent border-r md:border-r-0 border-dark-border p-4 md:py-6 overflow-y-auto hidden md:block transition-all duration-300">
+        
+        <!-- Mobile Search -->
+        <div class="md:hidden mb-4">
+          <input type="text" id="docSearchMobile" placeholder="Buscar en docs..." class="w-full bg-dark-surface border border-dark-border rounded-lg p-2 text-sm text-gray-200">
+        </div>
+
+        <nav class="space-y-6 text-sm">
+          
+          <div>
+            <div class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+              <i class="fa-solid fa-compass text-brand-400"></i> Introducción
+            </div>
+            <div class="space-y-1">
+              <a href="#introduccion" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">1. Visión General</a>
+              <a href="#tipos" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">2. Tipos de Addons</a>
+              <a href="#instalacion" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">3. Instalación</a>
+              <a href="#estructura" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">4. Estructura de Proyecto</a>
+              <a href="#manifest" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">5. Manifest Specification</a>
+            </div>
+          </div>
+
+          <div>
+            <div class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+              <i class="fa-solid fa-play text-brand-400"></i> Addons de Fuente
+            </div>
+            <div class="space-y-1">
+              <a href="#fuentes" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">6. Fuentes & Flujo</a>
+              <a href="#getstreams" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">7. getStreams()</a>
+              <a href="#streamitem" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">8. StreamItem</a>
+              <a href="#extract" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">9. Resolver extract()</a>
+              <a href="#headers" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">10. HTTP Headers</a>
+            </div>
+          </div>
+
+          <div>
+            <div class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+              <i class="fa-solid fa-grip text-brand-400"></i> Addons de Catálogo
+            </div>
+            <div class="space-y-1">
+              <a href="#catalogos" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">11. Catálogos & Flujo</a>
+              <a href="#contentitem" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">12. ContentItem</a>
+              <a href="#home" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">13. getHome()</a>
+              <a href="#search" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">14. search()</a>
+              <a href="#discover" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">15. discover()</a>
+              <a href="#metadata" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">16. getMeta()</a>
+            </div>
+          </div>
+
+          <div>
+            <div class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+              <i class="fa-solid fa-tv text-brand-400"></i> TV Live
+            </div>
+            <div class="space-y-1">
+              <a href="#tv-live" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">17. TV Arquitectura</a>
+              <a href="#tv-index" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">18. index.json Schema</a>
+              <a href="#tv-channel" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">19. Objeto Canal TV</a>
+              <a href="#tv-m3u" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">20. Soporte M3U / M3U8</a>
+              <a href="#tv-categorias" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">21. Categorías TV</a>
+            </div>
+          </div>
+
+          <div>
+            <div class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+              <i class="fa-solid fa-users text-brand-400"></i> Ecosistema & API
+            </div>
+            <div class="space-y-1">
+              <a href="#configuracion" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">22. Configuración</a>
+              <a href="#versionado" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">23. SemVer Versionado</a>
+              <a href="#comunidad" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">24. Publicación GitHub</a>
+              <a href="#topics" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">25. GitHub Topics</a>
+              <a href="#readme" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">26. README Estándar</a>
+              <a href="#errores" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">27. Diagnóstico de Errores</a>
+              <a href="#sdk" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">28. SDK API v1 Completa</a>
+              <a href="#checklist" class="nav-item block px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-dark-hover transition-all">29. Checklist Final</a>
+            </div>
+          </div>
+
+        </nav>
+      </aside>
+
+      <main class="flex-1 min-w-0 max-w-4xl space-y-16">
+
+        <!-- Hero Section -->
+        <div class="border-b border-dark-border pb-10 pt-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold mb-6">
+            <i class="fa-solid fa-code-branch"></i> LolPlusTV Core SDK v1.0
+          </div>
+          <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+            Sistema de Addons <br>
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-brand-400 via-purple-300 to-indigo-400">LolPlusTV Architecture</span>
+          </h1>
+          <p class="text-lg text-gray-400 leading-relaxed max-w-3xl">
+            Guía técnica oficial para la creación, prueba y distribución de módulos desacoplados. Diseñe integraciones sólidas para catálogos VOD, extracción de servidores multimediales e índices de TV en Vivo lineal.
+          </p>
+          <div class="flex flex-wrap gap-3 mt-8">
+            <a href="#fuentes" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-sm transition-all shadow-lg shadow-brand-600/25">
+              <i class="fa-solid fa-bolt"></i> Crear una Fuente
+            </a>
+            <a href="#catalogos" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-dark-card hover:bg-dark-hover border border-dark-border text-gray-200 font-semibold text-sm transition-all">
+              <i class="fa-solid fa-layer-group"></i> Crear un Catálogo
+            </a>
+            <a href="#tv-live" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-dark-card hover:bg-dark-hover border border-dark-border text-gray-200 font-semibold text-sm transition-all">
+              <i class="fa-solid fa-tv"></i> Integrar TV Live
+            </a>
+          </div>
+        </div>
+
+        <!-- Section 1: Introducción -->
+        <section id="introduccion" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">01.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Introducción</h2>
+          </div>
+          <p class="text-gray-300 leading-relaxed">
+            LolPlusTV utiliza una arquitectura modular extensible que permite desacoplar la aplicación nativa del descubrimiento e ingesta de metadatos o reproducciones. Un addon es un paquete distribuido externamente (alojado habitualmente en repositorios de GitHub) que expone sus capacidades mediante un manifiesto estandarizado.
+          </p>
+          <p class="text-gray-300 leading-relaxed">
+            El sistema se basa en el principio de <strong>separación de responsabilidades</strong>:
+          </p>
+          <div class="grid sm:grid-cols-2 gap-4 mt-4">
+            <div class="glass-card p-4 rounded-xl border border-dark-border">
+              <div class="text-brand-400 font-bold mb-1 flex items-center gap-2"><i class="fa-solid fa-magnifying-glass"></i> Catálogo</div>
+              <p class="text-xs text-gray-400">Responde a la pregunta: <em>"¿Qué contenidos existen, qué sinopsis tienen o cómo se ordenan?"</em></p>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-dark-border">
+              <div class="text-purple-400 font-bold mb-1 flex items-center gap-2"><i class="fa-solid fa-link"></i> Fuente</div>
+              <p class="text-xs text-gray-400">Responde a la pregunta: <em>"¿En qué servidor o stream puedo reproducir esta película o episodio específico?"</em></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 2: Tipos de addons -->
+        <section id="tipos" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">02.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Tipos de Addons</h2>
+          </div>
+          <p class="text-gray-300 mb-4">El motor distingue tres tipos fundamentales de módulos integrables:</p>
+          
+          <div class="grid md:grid-cols-3 gap-4">
+            <!-- Card 1 -->
+            <div class="glass-card p-5 rounded-xl border border-dark-border hover:border-brand-500/50 transition-all flex flex-col justify-between group">
+              <div>
+                <div class="w-10 h-10 rounded-lg bg-brand-500/10 border border-brand-500/20 text-brand-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <i class="fa-solid fa-server text-lg"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">Fuente (Source)</h3>
+                <p class="text-xs text-gray-400 leading-relaxed mb-4">
+                  Obtiene servidores, embeds o enlaces manifest (.m3u8/.mp4). Implementa las funciones clave <code>getStreams()</code> y opcionalmente <code>extract()</code>.
+                </p>
+              </div>
+              <span class="inline-block px-2.5 py-1 text-[11px] font-mono bg-brand-500/10 text-brand-400 rounded-md border border-brand-500/20 w-fit">type: "source"</span>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="glass-card p-5 rounded-xl border border-dark-border hover:border-purple-500/50 transition-all flex flex-col justify-between group">
+              <div>
+                <div class="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <i class="fa-solid fa-boxes-stacked text-lg"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">Catálogo (Catalog)</h3>
+                <p class="text-xs text-gray-400 leading-relaxed mb-4">
+                  Proporciona listas dinámicas para la pantalla principal, búsqueda general, descubrimiento por géneros y metadatos con <code>getHome()</code> y <code>search()</code>.
+                </p>
+              </div>
+              <span class="inline-block px-2.5 py-1 text-[11px] font-mono bg-purple-500/10 text-purple-400 rounded-md border border-purple-500/20 w-fit">type: "catalog"</span>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="glass-card p-5 rounded-xl border border-dark-border hover:border-indigo-500/50 transition-all flex flex-col justify-between group">
+              <div>
+                <div class="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <i class="fa-solid fa-satellite-dish text-lg"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">TV Live</h3>
+                <p class="text-xs text-gray-400 leading-relaxed mb-4">
+                  Suministra señal de canales lineales de televisión en directo categorizados por regiones o temáticas. Basado en estructuras JSON o enlaces M3U.
+                </p>
+              </div>
+              <span class="inline-block px-2.5 py-1 text-[11px] font-mono bg-indigo-500/10 text-indigo-400 rounded-md border border-indigo-500/20 w-fit">type: "tv"</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 3: Instalación -->
+        <section id="instalacion" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">03.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Instalación y Resoluciones de URI</h2>
+          </div>
+          <p class="text-gray-300 leading-relaxed">
+            Los desarrolladores e instaladores pueden ingresar un identificador corto tipo GitHub o una URL completa. El motor de resolución interno procesará el endpoint para localizar el manifiesto ejecutable.
+          </p>
+
+          <div class="relative group my-4">
+            <div class="absolute right-3 top-3 z-10">
+              <button onclick="copyCode(this)" class="px-2.5 py-1 text-xs bg-dark-border hover:bg-gray-700 text-gray-300 rounded-md transition-colors flex items-center gap-1.5">
+                <i class="fa-regular fa-copy"></i> Copiar
+              </button>
+            </div>
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-purple-300 overflow-x-auto leading-relaxed"><code>usuario/repositorio
+usuario/repositorio@main
+https://github.com/usuario/repositorio
+https://github.com/usuario/repositorio/tree/main
+https://raw.githubusercontent.com/usuario/repositorio/main/index.js</code></pre>
+          </div>
+
+          <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex gap-3 text-sm text-amber-200/90">
+            <i class="fa-solid fa-triangle-exclamation text-amber-400 text-lg flex-shrink-0 mt-0.5"></i>
+            <div>
+              <strong>Contexto de instalación:</strong> El apartado de la aplicación desde el cual se realiza la instalación dictamina su registro contextual principal (Fuentes vs Catálogos).
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 4: Estructura -->
+        <section id="estructura" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">04.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Estructura Recomendada del Proyecto</h2>
+          </div>
+          <p class="text-gray-300">
+            Un repositorio estándar debe presentar un árbol limpio con el archivo de configuración y la entrada JavaScript raíz.
+          </p>
+          <div class="relative group">
+            <div class="absolute right-3 top-3 z-10">
+              <span class="text-[11px] font-mono text-gray-500">Project Tree</span>
+            </div>
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-gray-300 leading-relaxed"><code>mi-addon/
+├── manifest.json         # Especificación del addon (obligatorio)
+├── index.js               # Punto de entrada de código ejecutable
+├── config.schema.json     # (Opcional) Esquema UI para opciones del usuario
+├── README.md              # Documentación para la comunidad
+└── assets/
+    └── logo.png           # Isotipo/Icono del módulo (512x512)</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 5: manifest.json -->
+        <section id="manifest" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">05.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">manifest.json Specification</h2>
+          </div>
+          <p class="text-gray-300">
+            El archivo <code>manifest.json</code> declara la metadata, requerimientos y permisos del módulo ante el runtime de LolPlusTV.
+          </p>
+
+          <div class="relative group my-4">
+            <div class="absolute right-3 top-3 z-10">
+              <button onclick="copyCode(this)" class="px-2.5 py-1 text-xs bg-dark-border hover:bg-gray-700 text-gray-300 rounded-md transition-colors flex items-center gap-1.5">
+                <i class="fa-regular fa-copy"></i> Copiar
+              </button>
+            </div>
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-emerald-300 overflow-x-auto leading-relaxed"><code>{
+  "id": "mi-fuente-oficial",
+  "name": "Mi Fuente HD",
+  "version": "1.0.0",
+  "description": "Proveedor de servidores HD para películas y series",
+  "type": "source",
+  "author": "Desarrollador",
+  "logo": "https://ejemplo.com/logo.png",
+  "entry": "index.js",
+  "supportedTypes": ["movie", "tv"],
+  "capabilities": ["resolve"],
+  "mode": "vod",
+  "apiVersion": 1
+}</code></pre>
+          </div>
+
+          <!-- Table Specification -->
+          <div class="overflow-x-auto border border-dark-border rounded-xl">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-dark-surface text-gray-300 uppercase font-mono border-b border-dark-border">
+                <tr>
+                  <th class="p-3">Campo</th>
+                  <th class="p-3">Tipo</th>
+                  <th class="p-3">Descripción</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-dark-border/60 text-gray-300">
+                <tr class="hover:bg-dark-hover/50"><td class="p-3 font-mono text-brand-400">id</td><td class="p-3 text-gray-500">String</td><td class="p-3">Identificador único invariable del paquete.</td></tr>
+                <tr class="hover:bg-dark-hover/50"><td class="p-3 font-mono text-brand-400">name</td><td class="p-3 text-gray-500">String</td><td class="p-3">Nombre comercial del addon presentado en UI.</td></tr>
+                <tr class="hover:bg-dark-hover/50"><td class="p-3 font-mono text-brand-400">type</td><td class="p-3 text-gray-500">Enum</td><td class="p-3">Valores válidos: <code>source</code>, <code>catalog</code>, <code>function</code>, <code>tv</code>.</td></tr>
+                <tr class="hover:bg-dark-hover/50"><td class="p-3 font-mono text-brand-400">entry</td><td class="p-3 text-gray-500">String</td><td class="p-3">Archivo de Script principal JS (por defecto <code>index.js</code>).</td></tr>
+                <tr class="hover:bg-dark-hover/50"><td class="p-3 font-mono text-brand-400">apiVersion</td><td class="p-3 text-gray-500">Integer</td><td class="p-3">Versión del contrato SDK (actualmente <code>1</code>).</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Section 6: Fuentes & Flujo -->
+        <section id="fuentes" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">06.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Fuentes & Diagrama de Flujo</h2>
+          </div>
+          <p class="text-gray-300">
+            Las Fuentes interceptan el requerimiento de reproducción e identificadores estándar (ej. TMDB ID) para consultar APIs o scrapeadores y retornar streams directos.
+          </p>
+
+          <!-- Interactive Visual Flow Diagram -->
+          <div class="p-6 glass-card rounded-2xl border border-dark-border space-y-4">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Flujo de Resolución VOD Source</h4>
+            <div class="flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
+              
+              <div class="flow-node p-3 rounded-xl w-full md:w-auto text-xs">
+                <div class="text-gray-400 font-mono">1. User Action</div>
+                <div class="text-white font-bold">Selección Contenido</div>
+              </div>
+
+              <i class="fa-solid fa-arrow-right text-brand-400 hidden md:block"></i>
+              <i class="fa-solid fa-arrow-down text-brand-400 md:hidden"></i>
+
+              <div class="flow-node p-3 rounded-xl w-full md:w-auto text-xs">
+                <div class="text-gray-400 font-mono">2. Core Engine</div>
+                <div class="text-white font-bold">getStreams(tmdbId)</div>
+              </div>
+
+              <i class="fa-solid fa-arrow-right text-brand-400 hidden md:block"></i>
+              <i class="fa-solid fa-arrow-down text-brand-400 md:hidden"></i>
+
+              <div class="flow-node p-3 rounded-xl w-full md:w-auto text-xs border-brand-500/50">
+                <div class="text-brand-400 font-mono">3. Addon JS</div>
+                <div class="text-white font-bold">StreamItem[]</div>
+              </div>
+
+              <i class="fa-solid fa-arrow-right text-brand-400 hidden md:block"></i>
+              <i class="fa-solid fa-arrow-down text-brand-400 md:hidden"></i>
+
+              <div class="flow-node p-3 rounded-xl w-full md:w-auto text-xs">
+                <div class="text-gray-400 font-mono">4. Video Player</div>
+                <div class="text-white font-bold">Playback Directo</div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 7: getStreams() -->
+        <section id="getstreams" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">07.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Implementación de getStreams()</h2>
+          </div>
+          <p class="text-gray-300">
+            Esta función asíncrona es obligatoria en addons de tipo <code>source</code>. Retorna una lista con servidores disponibles.
+          </p>
+
+          <div class="relative group my-4">
+            <div class="absolute right-3 top-3 z-10">
+              <button onclick="copyCode(this)" class="px-2.5 py-1 text-xs bg-dark-border hover:bg-gray-700 text-gray-300 rounded-md transition-colors flex items-center gap-1.5">
+                <i class="fa-regular fa-copy"></i> Copiar
+              </button>
+            </div>
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-blue-300 overflow-x-auto leading-relaxed"><code>async function getStreams(tmdbId, type, season, episode) {
+  if (type === "movie") {
+    return [{
+      url: "https://servidor.com/hls/" + tmdbId + "/master.m3u8",
+      title: "Latino 1080p",
+      quality: "1080p",
+      provider: "MiFuente"
+    }];
+  }
+
+  // Si es Serie de TV
+  return [{
+    url: `https://servidor.com/series/${tmdbId}/s${season}e${episode}.mp4`,
+    title: "Subtitulado HD",
+    quality: "720p",
+    provider: "MiFuente"
+  }];
+}
+
+module.exports = { getStreams };</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 8: StreamItem -->
+        <section id="streamitem" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">08.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Objeto StreamItem</h2>
+          </div>
+          <p class="text-gray-300">Estructura normalizada enviada al reproductor:</p>
+          <div class="relative group">
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-purple-300 leading-relaxed"><code>{
+  "url": "https://cdn.servidor.com/hls/live/master.m3u8",
+  "title": "Servidor VIP (Sin Publicidad)",
+  "quality": "1080p",
+  "provider": "Fuente Pro",
+  "headers": {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 9: extract() -->
+        <section id="extract" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">09.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Resolución con extract()</h2>
+          </div>
+          <p class="text-gray-300">
+            Si <code>getStreams()</code> retorna una URL intermedia o de incrustación (Embed iframe), la función opcional <code>extract()</code> resuelve la URL final antes de cargar el reproductor.
+          </p>
+
+          <div class="relative group my-4">
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-emerald-300 overflow-x-auto leading-relaxed"><code>async function extract(embedUrl) {
+  // Scraping o llamada para obtener el stream directo
+  return {
+    url: "https://stream-directo.com/video.m3u8",
+    quality: "1080p"
+  };
+}
+
+module.exports = { getStreams, extract };</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 10: Headers -->
+        <section id="headers" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">10.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">HTTP Headers Personalizados</h2>
+          </div>
+          <p class="text-gray-300">
+            Útil cuando un CDN restringe reproducciones por <code>Referer</code> o <code>Origin</code>.
+          </p>
+          <div class="relative group">
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-amber-300"><code>{
+  "url": "https://protected-stream.com/video.m3u8",
+  "headers": {
+    "Referer": "https://embed-provider.com/",
+    "Origin": "https://embed-provider.com"
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 11: Catálogos -->
+        <section id="catalogos" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">11.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Addons de Catálogo & Arquitectura</h2>
+          </div>
+          <p class="text-gray-300 leading-relaxed">
+            Un catálogo suministra listas estructuradas para navegación, búsquedas globales, carruseles de inicio y vistas detalladas de metadatos.
+          </p>
+
+          <div class="p-6 glass-card rounded-2xl border border-dark-border">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Flujo del Sistema de Catálogos</h4>
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-gray-300">
+              <span class="p-2 rounded bg-dark-bg border border-dark-border">getHome()</span>
+              <i class="fa-solid fa-chevron-right text-brand-400"></i>
+              <span class="p-2 rounded bg-dark-bg border border-dark-border">ContentItem[]</span>
+              <i class="fa-solid fa-chevron-right text-brand-400"></i>
+              <span class="p-2 rounded bg-dark-bg border border-dark-border">LolPlusTV UI</span>
+              <i class="fa-solid fa-chevron-right text-brand-400"></i>
+              <span class="p-2 rounded bg-brand-500/20 text-brand-300 border border-brand-500/30">Llama a Fuente</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 12: ContentItem -->
+        <section id="contentitem" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">12.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Estructura ContentItem</h2>
+          </div>
+          <p class="text-gray-300">Objeto estándar devuelto por carruseles y búsquedas:</p>
+          <div class="relative group">
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-blue-300 overflow-x-auto leading-relaxed"><code>{
+  "id": "tmdb:movie:550",        // Formato ID recomendado
+  "title": "Fight Club",
+  "originalTitle": "Fight Club",
+  "type": "movie",               // "movie" | "tv"
+  "poster": "https://image.tmdb.org/t/p/w500/poster.jpg",
+  "backdrop": "https://image.tmdb.org/t/p/w1280/backdrop.jpg",
+  "overview": "Un oficinista con insomnio...",
+  "year": "1999",
+  "rating": 8.4,
+  "genres": ["Drama", "Thriller"]
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 13: getHome() -->
+        <section id="home" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">13.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">getHome() — Vista Principal</h2>
+          </div>
+          <p class="text-gray-300">Genera filas o carruseles temáticos en la portada principal:</p>
+          <div class="relative group">
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-purple-300 overflow-x-auto"><code>async function getHome() {
+  return {
+    rows: [{
+      id: "estrenos_populares",
+      title: "Estrenos Destacados",
+      items: [
+        { id: "tmdb:movie:550", title: "Fight Club", type: "movie", poster: "https://..." }
+      ]
+    }]
+  };
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 14: search() -->
+        <section id="search" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">14.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">search() — Búsquedas Globales</h2>
+          </div>
+          <div class="relative group">
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-emerald-300 overflow-x-auto"><code>async function search(args) {
+  const query = args.query || args.q || "";
+  // Lógica de búsqueda y retorno de ContentItem[]
+  return [
+    { id: "tmdb:movie:550", title: "Fight Club", type: "movie" }
+  ];
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 15: discover() -->
+        <section id="discover" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">15.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">discover() — Filtros y Paginación</h2>
+          </div>
+          <div class="relative group">
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-amber-300 overflow-x-auto"><code>async function discover(args) {
+  const category = args.category || "popular";
+  const page = args.page || 1;
+  return []; // Array de ContentItem
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 16: getMeta() -->
+        <section id="metadata" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">16.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">getMeta() — Detalle Completo</h2>
+          </div>
+          <div class="relative group">
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-blue-300 overflow-x-auto"><code>async function getMeta(args) {
+  return {
+    id: args.id,
+    title: "Fight Club",
+    overview: "Sinopsis extendida...",
+    cast: ["Brad Pitt", "Edward Norton"]
+  };
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 17: TV Live -->
+        <section id="tv-live" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">17.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">TV Live — Arquitectura Lineal</h2>
+          </div>
+          <p class="text-gray-300 leading-relaxed">
+            A diferencia de los catálogos VOD, los canales de TV en Vivo funcionan mediante repositorios de canales ordenados por categorías en un documento JSON estático o listas remotas M3U.
+          </p>
+
+          <div class="p-6 glass-card rounded-2xl border border-dark-border space-y-3">
+            <div class="text-xs font-mono text-indigo-400 font-bold uppercase">TV Architecture Stack</div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center text-xs">
+              <div class="p-3 bg-dark-bg border border-dark-border rounded-xl">manifest.json</div>
+              <div class="p-3 bg-dark-bg border border-dark-border rounded-xl">index.json</div>
+              <div class="p-3 bg-dark-bg border border-dark-border rounded-xl">M3U List</div>
+              <div class="p-3 bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 font-bold rounded-xl">Live Player</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 18: index.json -->
+        <section id="tv-index" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">18.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Esquema index.json para TV</h2>
+          </div>
+          <div class="relative group">
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-purple-300 overflow-x-auto leading-relaxed"><code>{
+  "categories": [
+    {
+      "name": "Noticias 24/7",
+      "channels": [
+        {
+          "id": "cnn-espanol",
+          "name": "CNN en Español",
+          "url": "https://servidor.com/live/cnn/index.m3u8",
+          "logo": "https://servidor.com/logos/cnn.png",
+          "country": "US",
+          "language": "es"
+        }
+      ]
+    }
+  ]
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 19: Canales TV -->
+        <section id="tv-channel" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">19.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Objeto Canal TV</h2>
+          </div>
+          <p class="text-gray-300">Campos obligatorios: <code>id</code>, <code>name</code>, <code>url</code>.</p>
+          <div class="relative group">
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-emerald-300"><code>{
+  "id": "canal-deportes-1",
+  "name": "Deportes HD",
+  "url": "https://live.cdn.com/stream.m3u8",
+  "logo": "https://cdn.com/logo.png",
+  "group": "Deportes",
+  "country": "PE",
+  "language": "es"
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 20: M3U / M3U8 -->
+        <section id="tv-m3u" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">20.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Soporte para M3U / M3U8</h2>
+          </div>
+          <p class="text-gray-300">
+            Un addon de TV Live puede enlasar directamente una lista IPTV remota en su manifest mediante el parámetro <code>m3u_url</code>.
+          </p>
+          <div class="relative group">
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-amber-300"><code>{
+  "id": "mi-addon-iptv",
+  "name": "Mi Lista IPTV",
+  "version": "1.0.0",
+  "m3u_url": "https://miservidor.com/lista_canales.m3u"
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 21: Categorías TV -->
+        <section id="tv-categorias" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">21.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Categorización de Canales</h2>
+          </div>
+          <p class="text-gray-300">Organice sus canales en grupos estándar (Deportes, Noticias, Entretenimiento, Infantiles, Cine, etc.) para optimizar la interfaz de TV.</p>
+        </section>
+
+        <!-- Section 22: Configuración -->
+        <section id="configuracion" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">22.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Esquema de Configuración del Usuario</h2>
+          </div>
+          <p class="text-gray-300">Permite renderizar un formulario dinámico de configuración en la app:</p>
+          <div class="relative group">
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-blue-300 overflow-x-auto"><code>{
+  "configSchema": [
+    {
+      "key": "apiKey",
+      "label": "API Key de Acceso",
+      "type": "password"
+    },
+    {
+      "key": "idioma",
+      "label": "Idioma Preferido",
+      "type": "select",
+      "default": "es",
+      "options": ["es", "en"]
+    }
+  ]
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 23: Versionado -->
+        <section id="versionado" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">23.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Versionado SemVer</h2>
+          </div>
+          <div class="glass-card p-4 rounded-xl border border-dark-border font-mono text-xs space-y-2 text-gray-300">
+            <div><span class="text-emerald-400">1.0.0</span> → Lanzamiento Inicial Estable</div>
+            <div><span class="text-blue-400">1.0.1</span> → Corrección de Bugs o Selectores</div>
+            <div><span class="text-purple-400">1.1.0</span> → Nueva funcionalidad compatible</div>
+            <div><span class="text-red-400">2.0.0</span> → Cambio mayor que rompe compatibilidad</div>
+          </div>
+        </section>
+
+        <!-- Section 24: Publicación -->
+        <section id="comunidad" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">24.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Publicación en la Comunidad</h2>
+          </div>
+          <p class="text-gray-300">
+            Para publicar un addon comunitariamente, alójelo en un repositorio público de GitHub y añada los Topics adecuados para que el buscador automático de LolPlusTV lo indexe.
+          </p>
+        </section>
+
+        <!-- Section 25: Topics -->
+        <section id="topics" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">25.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Topics de GitHub Requeridos</h2>
+          </div>
+
+          <div class="overflow-x-auto border border-dark-border rounded-xl">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-dark-surface text-gray-300 font-mono uppercase border-b border-dark-border">
+                <tr>
+                  <th class="p-3">Módulo</th>
+                  <th class="p-3">Topic Principal</th>
+                  <th class="p-3">Variantes Reconocidas</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-dark-border/60 text-gray-300">
+                <tr class="hover:bg-dark-hover/50"><td class="p-3 font-bold text-white">Fuentes</td><td class="p-3 font-mono text-brand-400">lol-addon-fuentes</td><td class="p-3 font-mono text-gray-500">lol-addon-source, lol-addon-fuente</td></tr>
+                <tr class="hover:bg-dark-hover/50"><td class="p-3 font-bold text-white">Catálogos</td><td class="p-3 font-mono text-purple-400">lol-addon-catalogos</td><td class="p-3 font-mono text-gray-500">lol-addon-catalog, lol-addon-catalogo</td></tr>
+                <tr class="hover:bg-dark-hover/50"><td class="p-3 font-bold text-white">TV Live</td><td class="p-3 font-mono text-indigo-400">lol-tvchanel</td><td class="p-3 font-mono text-gray-500">lol_tvchanel, lol-addon-tvchanel</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Section 26: README -->
+        <section id="readme" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">26.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">README.md Recomendado</h2>
+          </div>
+          <p class="text-gray-300">Incluya las instrucciones básicas de instalación y compatibilidad en su README:</p>
+          <div class="relative group">
+            <pre class="bg-dark-surface border border-dark-border rounded-xl p-4 text-xs font-mono text-gray-300"><code># Mi Fuente Pro
+Addon de servidores en español para LolPlusTV.
+
+## Instalación
+usuario/mi-fuente-pro
+
+## Topic
+lol-addon-fuentes</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 27: Errores Comunes -->
+        <section id="errores" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">27.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Diagnóstico de Errores Frecuentes</h2>
+          </div>
+          <div class="grid gap-3 text-xs">
+            <div class="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-200">
+              <strong class="text-red-400">Fuente sin respuesta:</strong> <code>getStreams()</code> debe retornar siempre un Array. En caso de no encontrar streams, retorne un array vacío <code>[]</code> en vez de <code>null</code>.
+            </div>
+            <div class="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-200">
+              <strong class="text-red-400">Identificador inestable:</strong> Cambiar el campo <code>id</code> del manifest romperá las configuraciones e historiales de los usuarios instalados.
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 28: LolPlusTV Addon API v1 -->
+        <section id="sdk" class="scroll-mt-24 space-y-6">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">28.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">LolPlusTV Addon SDK API v1</h2>
+          </div>
+
+          <!-- Master Architecture Diagram -->
+          <div class="p-6 glass-card rounded-2xl border border-dark-border space-y-6">
+            <div class="flex items-center justify-between border-b border-dark-border pb-3">
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider">Arquitectura Completa del Sistema LolPlusTV</h3>
+              <span class="text-xs font-mono text-brand-400">v1.0 Specifications</span>
+            </div>
+
+            <!-- CSS Visual Diagram -->
+            <div class="space-y-6 text-xs text-center">
+              
+              <!-- Core Box -->
+              <div class="p-3 bg-brand-600/20 border border-brand-500/40 rounded-xl font-bold text-white max-w-xs mx-auto shadow-lg shadow-brand-500/10">
+                LOLPLUSTV CORE ENGINE
+              </div>
+
+              <!-- Split Branches -->
+              <div class="grid grid-cols-2 gap-4">
+                
+                <!-- Left: VOD -->
+                <div class="p-4 bg-dark-surface border border-dark-border rounded-xl space-y-3">
+                  <div class="font-bold text-purple-400 uppercase tracking-wider text-[11px]">Subsistema VOD</div>
+                  <div class="grid grid-cols-2 gap-2 text-[11px]">
+                    <div class="p-2 bg-dark-bg border border-dark-border rounded">
+                      <div class="text-white font-semibold">FUENTES</div>
+                      <div class="text-[10px] text-gray-400 font-mono">getStreams()</div>
+                    </div>
+                    <div class="p-2 bg-dark-bg border border-dark-border rounded">
+                      <div class="text-white font-semibold">CATÁLOGOS</div>
+                      <div class="text-[10px] text-gray-400 font-mono">getHome()</div>
+                    </div>
+                  </div>
+                  <div class="p-2 bg-brand-500/10 border border-brand-500/20 rounded text-brand-300 font-semibold">
+                    VOD Player & Stream Resolvers
+                  </div>
+                </div>
+
+                <!-- Right: TV Live -->
+                <div class="p-4 bg-dark-surface border border-dark-border rounded-xl space-y-3">
+                  <div class="font-bold text-indigo-400 uppercase tracking-wider text-[11px]">Subsistema TV Live</div>
+                  <div class="grid grid-cols-2 gap-2 text-[11px]">
+                    <div class="p-2 bg-dark-bg border border-dark-border rounded">
+                      <div class="text-white font-semibold">M3U Parser</div>
+                      <div class="text-[10px] text-gray-400 font-mono">.m3u / .m3u8</div>
+                    </div>
+                    <div class="p-2 bg-dark-bg border border-dark-border rounded">
+                      <div class="text-white font-semibold">JSON Index</div>
+                      <div class="text-[10px] text-gray-400 font-mono">index.json</div>
+                    </div>
+                  </div>
+                  <div class="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded text-indigo-300 font-semibold">
+                    Live TV Grid & Player
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 29: Checklist -->
+        <section id="checklist" class="scroll-mt-24 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-400 font-mono text-sm font-bold">29.</span>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Checklist de Publicación</h2>
+          </div>
+          <p class="text-gray-300">Verifique los requisitos antes de hacer público su repositorio:</p>
+
+          <div id="checklistContainer" class="p-6 glass-card rounded-2xl border border-dark-border space-y-3">
+            
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
+              <input type="checkbox" class="w-4 h-4 rounded accent-brand-500 bg-dark-bg border-dark-border">
+              <span class="text-xs text-gray-200">El repositorio de GitHub es de acceso PÚBLICO.</span>
+            </label>
+
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
+              <input type="checkbox" class="w-4 h-4 rounded accent-brand-500 bg-dark-bg border-dark-border">
+              <span class="text-xs text-gray-200">El archivo <code>manifest.json</code> es válido según la especificación API v1.</span>
+            </label>
+
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
+              <input type="checkbox" class="w-4 h-4 rounded accent-brand-500 bg-dark-bg border-dark-border">
+              <span class="text-xs text-gray-200">El parámetro <code>id</code> es único y la versión inicial está asignada.</span>
+            </label>
+
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
+              <input type="checkbox" class="w-4 h-4 rounded accent-brand-500 bg-dark-bg border-dark-border">
+              <span class="text-xs text-gray-200">Se adjuntó un archivo <code>README.md</code> descriptivo para la comunidad.</span>
+            </label>
+
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-dark-surface/50 border border-dark-border hover:bg-dark-hover cursor-pointer transition-all">
+              <input type="checkbox" class="w-4 h-4 rounded accent-brand-500 bg-dark-bg border-dark-border">
+              <span class="text-xs text-gray-200">Se asignó el Topic correcto en GitHub (ej. <code>lol-addon-fuentes</code>).</span>
+            </label>
+
+          </div>
+
+          <div class="pt-6 flex justify-between items-center text-xs text-gray-500 border-t border-dark-border">
+            <span>LolPlusTV Addon SDK v1 — Developer Documentation</span>
+            <a href="#top" class="text-brand-400 hover:underline flex items-center gap-1">
+              <i class="fa-solid fa-arrow-up"></i> Volver arriba
+            </a>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Copy Code snippet function
+    function copyCode(button) {
+      const codeBlock = button.parentElement.parentElement.querySelector('code');
+      const text = codeBlock.innerText;
+      
+      const el = document.createElement('textarea');
+      el.value = text;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+
+      const originalHtml = button.innerHTML;
+      button.innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i> ¡Copiado!';
+      button.classList.add('bg-brand-600/30');
+      
+      setTimeout(() => {
+        button.innerHTML = originalHtml;
+        button.classList.remove('bg-brand-600/30');
+      }, 2000);
+    }
+
+    // Scroll progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('progress-bar').style.width = scrolled + '%';
+    });
+
+    // Active link highlighting on scroll
+    const sections = document.querySelectorAll('section');
+    const navItems = document.querySelectorAll('.nav-item');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop - 120;
+        if (pageYOffset >= sectionTop) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      navItems.forEach(item => {
+        item.classList.remove('nav-active');
+        if (item.getAttribute('href') === `#${current}`) {
+          item.classList.add('nav-active');
+        }
+      });
+    });
+
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+    function toggleMobileMenu() {
+      sidebar.classList.toggle('hidden');
+      sidebarBackdrop.classList.toggle('hidden');
+    }
+
+    mobileMenuBtn?.addEventListener('click', toggleMobileMenu);
+    sidebarBackdrop?.addEventListener('click', toggleMobileMenu);
+
+    // Live search filter
+    const docSearch = document.getElementById('docSearch');
+    docSearch?.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      sections.forEach(section => {
+        const text = section.innerText.toLowerCase();
+        if (text.includes(query)) {
+          section.style.display = 'block';
+        } else {
+          section.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
